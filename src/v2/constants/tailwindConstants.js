@@ -945,7 +945,7 @@ const colors = {
     },
 };
 
-const flattenColorPalette = (colors) => {
+export const flattenColorPalette = (colors) => {
     const result = {};
     Object.keys(colors).forEach(color => {
         Object.keys(colors[color]).forEach(weight => {
@@ -957,6 +957,47 @@ const flattenColorPalette = (colors) => {
 
 const flatColorPalette = flattenColorPalette(colors);
 
+
+/*
+Class
+Properties
+duration-0	transition-duration: 0s;
+duration-75	transition-duration: 75ms;
+duration-100	transition-duration: 100ms;
+duration-150	transition-duration: 150ms;
+duration-200	transition-duration: 200ms;
+duration-300	transition-duration: 300ms;
+duration-500	transition-duration: 500ms;
+duration-700	transition-duration: 700ms;
+duration-1000	transition-duration: 1000ms;
+*/
+const transitionDuration = {
+    '0': '0s',
+    '75': '75ms',
+    '100': '100ms',
+    '150': '150ms',
+    '200': '200ms',
+    '300': '300ms',
+    '500': '500ms',
+    '700': '700ms',
+    '1000': '1000ms',
+};
+
+/*
+// animationTimingFunction
+ease-linear	transition-timing-function: linear;
+ease-in	transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+ease-out	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+ease-in-out	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+*/
+const animationTimingFunction = {
+    'linear': 'linear',
+    'in': 'cubic-bezier(0.4, 0, 1, 1)',
+    'out': 'cubic-bezier(0, 0, 0.2, 1)',
+    'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
+}
+
+/*
 const theme = (prop) => {
     if (prop === 'blur') {
         return blur;
@@ -976,15 +1017,22 @@ const theme = (prop) => {
     if (prop === 'colors') {
         return colors;
     }
-}
+    if (prop === 'transitionDuration') {
+        return transitionDuration;
+    }
+    if (prop === 'transitionTimingFunction') {
+        return animationTimingFunction;
+    }
+}*/
 
-module.exports =  {
-    theme,
+// Default tailwind theme
+export const TAILWIND_DEFAULT_THEME = {
     blur,
     scale,
     rotate,
     grayscale,
     opacity,
-    colors: flatColorPalette,
-    flattenColorPalette,
-}
+    colors,
+    transitionDuration,
+    animationTimingFunction,
+};

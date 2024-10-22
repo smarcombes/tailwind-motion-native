@@ -148,9 +148,13 @@ export function parseCSSEasing(easing) {
         return parseCubicBezier(trimmed);
     }
 
+    if (trimmed === 'linear') {
+        return Easing.linear;
+    }
+
     if (trimmed.startsWith("linear(")) {
         return parseLinear(trimmed);
     }
 
-    throw new Error("Unsupported CSS easing value");
+    throw new Error("Unsupported CSS easing value: "+trimmed);
 }
