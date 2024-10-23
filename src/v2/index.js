@@ -2,6 +2,7 @@ import { pluginCreator, pluginConfig } from "./source/index.js";
 import { createPlugin } from "./lib/pluginEngine.js";
 import { resolveCSSVars } from "./lib/parseCssValue.js";
 import { parseAnimationCssValue } from "./lib/parseAnimationCssValue.js";
+import { mergeMotiProps } from "./lib/motiProps.js";
 
 // Instanciate the tailwind-motion plugin via our plugin mock interface
 const { solveClassNamesToObjects, solveClassNamesToVars, listUtilities, getVar, getVars } = createPlugin(pluginCreator, pluginConfig);
@@ -16,7 +17,7 @@ console.log('');
 
 
 // Example usage
-const classNames = ' .motion-preset-bounce -motion-translate-y-in-150 motion-duration-2000';
+const classNames = ' .motion-preset-bounce -motion-translate-y-in-150 motion-duration-2000 motion-translate-x-in-100';
 const solved = solveClassNamesToObjects(classNames);
 console.log('=== Solved classes ===');
 console.log(JSON.stringify(solved, null, 4));
@@ -47,3 +48,8 @@ const animation = resolved['animation'];
 const parsedAnimation = parseAnimationCssValue(animation, (varName) => vars[varName.replace('--', '')]);
 console.log('=== Parsed animation ===');
 console.log(JSON.stringify(parsedAnimation, null, 4));
+
+
+const merged = mergeMotiProps(parsedAnimation.map(a => a.moti));
+console.log('=== Merged animation ===');
+console.log(JSON.stringify(merged, null, 4));
