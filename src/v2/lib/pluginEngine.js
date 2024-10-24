@@ -68,7 +68,7 @@ const createUtility = (baseClasses, params) => {
                 rootName = `${baseClass}-${modifier}`;
             }
 
-            const value = Object.keys(values)
+            const valueKey = Object.keys(values)
                 .find((v) => {
                     if (v === "DEFAULT") {
                         return className.trim() === `${rootName}`;
@@ -76,10 +76,11 @@ const createUtility = (baseClasses, params) => {
 
                     return className.trim() === `${rootName}-${v}`;
                 });
-            if (!value) {
+            if (!valueKey) {
                 return false;
             }
 
+            const value = values[valueKey];
             return {
                 baseClass,
                 modifier,
