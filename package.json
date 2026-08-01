@@ -1,0 +1,36 @@
+{
+  "name": "tailwind-motion-native",
+  "version": "0.1.0",
+  "description": "Resolve tailwindcss-motion animation classes into Moti/Reanimated animation props for React Native",
+  "type": "module",
+  "exports": {
+    "./*": "./*.js"
+  },
+  "imports": {
+    "./*": "./*.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "tailwind",
+    "tailwindcss-motion",
+    "react-native",
+    "moti",
+    "reanimated",
+    "animation"
+  ],
+  "author": "Severin Marcombes",
+  "license": "MIT",
+  "dependencies": {
+    "@hookun/parse-animation-shorthand": "^0.1.5",
+    "check-types": "^11.2.3",
+    "css-shorthand-parser": "^0.3.9",
+    "postcss": "^8.4.47",
+    "postcss-calc": "^10.0.2",
+    "react-native-reanimated": "^3.16.1",
+    "string-split-by": "^1.0.0"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
