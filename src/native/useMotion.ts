@@ -180,14 +180,14 @@ export const useMotion = (
     if (!enabled) return plan.settled;
     if (!(config.respectReducedMotion && reducedMotion)) return plan.initial;
 
-    const values = { ...plan.initial };
+    // Reduced motion keeps opacity and colour animations but skips movement, so
+    // those properties start where they will end up.
+    const startValues = { ...plan.initial };
     MOVEMENT_PROPERTIES.forEach((property) => {
-      if (property in values) {
-        const key = property as NumericProperty;
-        values[key] = plan.settled[key];
-      }
+      const key = property as NumericProperty;
+      if (key in startValues) startValues[key] = plan.settled[key];
     });
-    return values;
+    return startValues;
   }, [plan, enabled, reducedMotion, config.respectReducedMotion]);
 
   // A fixed set of shared values keeps the hook order stable no matter which
