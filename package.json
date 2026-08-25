@@ -67,7 +67,8 @@
     "demo": "node scripts/print-classes.mjs",
     "vendor:upstream": "node scripts/vendor-upstream.mjs",
     "example:install": "node scripts/pack-for-example.mjs",
-    "prepublishOnly": "npm run clean && npm run typecheck && npm test"
+    "prepublishOnly": "npm run clean && npm run typecheck && npm test",
+    "prepare": "bob build"
   },
   "peerDependencies": {
     "nativewind": ">=4.1.0",

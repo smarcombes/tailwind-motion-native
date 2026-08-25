@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - name: Check the published package contents
+        run: npm pack --dry-run
+
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci --ignore-scripts && npm run build
+
+      - name: Typecheck the example app against the built package
+        working-directory: examples/expo-nativewind
+        run: |
+          npm install
+          npx tsc --noEmit
