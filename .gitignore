@@ -1,3 +1,11 @@
 .DS_Store
 node_modules
+dist
+*.tgz
+*.log
 yarn-error.log
+
+# Expo
+.expo
+.expo-shared
+web-build

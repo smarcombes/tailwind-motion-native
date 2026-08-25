@@ -95,8 +95,8 @@ grayscale-0	filter: grayscale(0);
 grayscale	filter: grayscale(100%);
 */
 const grayscale = {
-    '0': 0,
-    'DEFAULT': 100,
+    '0': '0',
+    'DEFAULT': '100%',
 }
 
 // Opacity
@@ -657,6 +657,11 @@ Rose
 #4c0519
 */
 const colors = {
+    'inherit': 'inherit',
+    'current': 'currentColor',
+    'transparent': 'transparent',
+    'black': '#000000',
+    'white': '#ffffff',
     'slate': {
         '50': '#f8fafc',
         '100': '#f1f5f9',
@@ -945,17 +950,23 @@ const colors = {
     },
 };
 
-export const flattenColorPalette = (colors) => {
-    const result = {};
-    Object.keys(colors).forEach(color => {
-        Object.keys(colors[color]).forEach(weight => {
-            result[`${color}-${weight}`] = colors[color][weight];
-        });
+export const flattenColorPalette = (
+    colors: Record<string, unknown>
+): Record<string, string> => {
+    const result: Record<string, string> = {};
+    Object.entries(colors ?? {}).forEach(([color, shades]) => {
+        if (typeof shades === 'string') {
+            result[color] = shades;
+            return;
+        }
+        if (shades && typeof shades === 'object') {
+            Object.entries(shades as Record<string, string>).forEach(([shade, value]) => {
+                result[shade === 'DEFAULT' ? color : `${color}-${shade}`] = value;
+            });
+        }
     });
     return result;
 }
-
-const flatColorPalette = flattenColorPalette(colors);
 
 
 /*
@@ -972,6 +983,7 @@ duration-700	transition-duration: 700ms;
 duration-1000	transition-duration: 1000ms;
 */
 const transitionDuration = {
+    'DEFAULT': '150ms',
     '0': '0s',
     '75': '75ms',
     '100': '100ms',
@@ -990,7 +1002,8 @@ ease-in	transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 ease-out	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 ease-in-out	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 */
-const animationTimingFunction = {
+const transitionTimingFunction = {
+    'DEFAULT': 'cubic-bezier(0.4, 0, 0.2, 1)',
     'linear': 'linear',
     'in': 'cubic-bezier(0.4, 0, 1, 1)',
     'out': 'cubic-bezier(0, 0, 0.2, 1)',
@@ -1025,8 +1038,12 @@ const theme = (prop) => {
     }
 }*/
 
-// Default tailwind theme
-export const TAILWIND_DEFAULT_THEME = {
+/**
+ * The subset of the Tailwind CSS default theme that tailwindcss-motion reads
+ * through the `theme()` helper. Bundled so the plugin can run without
+ * `tailwindcss` installed at runtime.
+ */
+export const TAILWIND_DEFAULT_THEME: Record<string, Record<string, unknown>> = {
     blur,
     scale,
     rotate,
@@ -1034,5 +1051,6 @@ export const TAILWIND_DEFAULT_THEME = {
     opacity,
     colors,
     transitionDuration,
-    animationTimingFunction,
+    transitionTimingFunction,
+    animationTimingFunction: transitionTimingFunction,
 };

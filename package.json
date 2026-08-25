@@ -1,36 +1,107 @@
 {
   "name": "tailwind-motion-native",
-  "version": "0.1.0",
-  "description": "Resolve tailwindcss-motion animation classes into Moti/Reanimated animation props for React Native",
-  "type": "module",
-  "exports": {
-    "./*": "./*.js"
-  },
-  "imports": {
-    "./*": "./*.js"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
+  "version": "0.2.0",
+  "description": "tailwindcss-motion animation classes for Expo + Nativewind, played through Reanimated",
   "keywords": [
     "tailwind",
+    "tailwindcss",
     "tailwindcss-motion",
+    "nativewind",
+    "expo",
     "react-native",
-    "moti",
     "reanimated",
-    "animation"
+    "moti",
+    "animation",
+    "motion"
   ],
-  "author": "Severin Marcombes",
-  "license": "MIT",
-  "dependencies": {
-    "@hookun/parse-animation-shorthand": "^0.1.5",
-    "check-types": "^11.2.3",
-    "css-shorthand-parser": "^0.3.9",
-    "postcss": "^8.4.47",
-    "postcss-calc": "^10.0.2",
-    "react-native-reanimated": "^3.16.1",
-    "string-split-by": "^1.0.0"
+  "homepage": "https://github.com/smarcombes/tailwind-motion-native#readme",
+  "bugs": {
+    "url": "https://github.com/smarcombes/tailwind-motion-native/issues"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smarcombes/tailwind-motion-native.git"
+  },
+  "license": "MIT",
+  "author": "Severin Marcombes",
+  "type": "module",
+  "source": "./src/index.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
+  "types": "./dist/typescript/commonjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/typescript/module/index.d.ts",
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/typescript/module/core/index.d.ts",
+        "default": "./dist/module/core/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/core/index.d.ts",
+        "default": "./dist/commonjs/core/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist",
+    "!**/__tests__",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "demo": "node scripts/print-classes.mjs",
+    "vendor:upstream": "node scripts/vendor-upstream.mjs",
+    "example:install": "node scripts/pack-for-example.mjs",
+    "prepublishOnly": "npm run clean && npm run typecheck && npm test"
+  },
+  "peerDependencies": {
+    "nativewind": ">=4.1.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0",
+    "react-native-reanimated": ">=3.16.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "nativewind": "^4.2.6",
+    "react": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-builder-bob": "^0.40.13",
+    "react-native-reanimated": "^3.19.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.2"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "dist",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      "typescript"
+    ]
+  }
 }

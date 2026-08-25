@@ -1,5 +1,25 @@
+/* Vendored from tailwindcss-motion v1.1.1 (MIT) - see ./README.md */
+import type { CSSRuleObject, PluginAPI } from "./api.js";
+
+type SpringMultipliers = {
+  [key: string]: string;
+};
+
+type ThemeConfig = {
+  motionDelay: Record<string, string>;
+  motionDuration: Record<string, string>;
+  motionLoopCount: Record<string, string>;
+  motionTimingFunction: Record<string, string>;
+  transitionDuration: Record<string, string>;
+  transitionTimingFunction: Record<string, string>;
+};
+
+type UtilityOptions = {
+  modifier: string | null;
+};
+
 // Define spring types and their corresponding perceptual duration multipliers
-export const springPerceptualMultipliers = {
+export const springPerceptualMultipliers: SpringMultipliers = {
   "var(--motion-spring-smooth)": "1.66",
   "var(--motion-spring-snappy)": "1.66",
   "var(--motion-spring-bouncy)": "1.66",
@@ -8,18 +28,18 @@ export const springPerceptualMultipliers = {
   "var(--motion-bounce)": "2",
 };
 
-/**
- * @param {import('tailwindcss/types/config').PluginAPI['matchUtilities']} matchUtilities
- * @param {import('tailwindcss/types/config').PluginAPI['theme']} theme
- * */
-export function addModifiers(matchUtilities, theme) {
+export function addModifiers(
+  matchUtilities: PluginAPI["matchUtilities"],
+  addUtilities: PluginAPI["addUtilities"],
+  theme: (path: keyof ThemeConfig) => Record<string, string>
+) {
   // duration
   matchUtilities(
     {
-      "motion-duration": (value, { modifier }) => {
+      "motion-duration": (value: string, { modifier }: UtilityOptions) => {
         switch (modifier) {
           case "scale":
-            return { "--motion-scale-duration": value };
+            return { "--motion-scale-duration": value } as CSSRuleObject;
           case "translate":
             return { "--motion-translate-duration": value };
           case "rotate":
@@ -41,7 +61,7 @@ export function addModifiers(matchUtilities, theme) {
       },
     },
     {
-      values: theme("animationDuration"),
+      values: theme("motionDuration"),
       modifiers: {
         scale: "scale",
         translate: "translate",
@@ -58,10 +78,10 @@ export function addModifiers(matchUtilities, theme) {
   // delay
   matchUtilities(
     {
-      "motion-delay": (value, { modifier }) => {
+      "motion-delay": (value: string, { modifier }: UtilityOptions) => {
         switch (modifier) {
           case "scale":
-            return { "--motion-scale-delay": value };
+            return { "--motion-scale-delay": value } as CSSRuleObject;
           case "translate":
             return { "--motion-translate-delay": value };
           case "rotate":
@@ -83,8 +103,7 @@ export function addModifiers(matchUtilities, theme) {
       },
     },
     {
-      // use the same values as the duration
-      values: theme("animationDuration"),
+      values: theme("motionDelay"),
       modifiers: {
         scale: "scale",
         translate: "translate",
@@ -101,7 +120,7 @@ export function addModifiers(matchUtilities, theme) {
   // ease
   matchUtilities(
     {
-      "motion-ease": (value, { modifier }) => {
+      "motion-ease": (value: string, { modifier }: UtilityOptions) => {
         // if the ease isn't a spring, the multiplier doesn't change anything
         const perceptualDurationMultiplier =
           springPerceptualMultipliers[value] || 1;
@@ -118,7 +137,7 @@ export function addModifiers(matchUtilities, theme) {
             return {
               "--motion-scale-timing": value,
               "--motion-scale-perceptual-duration-multiplier": `${perceptualDurationMultiplier}`,
-            };
+            } as CSSRuleObject;
           case "translate":
             return {
               "--motion-translate-timing": value,
@@ -180,7 +199,71 @@ export function addModifiers(matchUtilities, theme) {
       },
     },
     {
-      values: theme("animationTimingFunction"),
+      values: theme("motionTimingFunction"),
+      modifiers: {
+        scale: "scale",
+        translate: "translate",
+        rotate: "rotate",
+        blur: "blur",
+        grayscale: "grayscale",
+        opacity: "opacity",
+        background: "background",
+        text: "text",
+      },
+    }
+  );
+
+  // animation play state
+  addUtilities({
+    ".motion-paused": {
+      animationPlayState: "paused",
+      "&::before": {
+        animationPlayState: "paused",
+      },
+      "&::after": {
+        animationPlayState: "paused",
+      },
+    },
+    ".motion-running": {
+      animationPlayState: "running",
+      "&::before": {
+        animationPlayState: "running",
+      },
+      "&::after": {
+        animationPlayState: "running",
+      },
+    },
+  });
+
+  // loop
+  matchUtilities(
+    {
+      "motion-loop": (value: string, { modifier }: UtilityOptions) => {
+        switch (modifier) {
+          case "scale":
+            return { "--motion-scale-loop-count": value } as CSSRuleObject;
+          case "translate":
+            return { "--motion-translate-loop-count": value };
+          case "rotate":
+            return { "--motion-rotate-loop-count": value };
+          case "blur":
+          case "grayscale":
+            return { "--motion-filter-loop-count": value };
+          case "opacity":
+            return { "--motion-opacity-loop-count": value };
+          case "background":
+            return { "--motion-background-color-loop-count": value };
+          case "text":
+            return { "--motion-text-color-loop-count": value };
+          default:
+            return {
+              "--motion-loop-count": value,
+            };
+        }
+      },
+    },
+    {
+      values: theme("motionLoopCount"),
       modifiers: {
         scale: "scale",
         translate: "translate",
@@ -196,7 +279,9 @@ export function addModifiers(matchUtilities, theme) {
 }
 
 export const modifiersTheme = {
-  animationTimingFunction: (theme) => ({
+  motionTimingFunction: (
+    theme: (path: keyof ThemeConfig) => Record<string, string>
+  ) => ({
     ...theme("transitionTimingFunction"),
     "spring-smooth": "var(--motion-spring-smooth)",
     "spring-snappy": "var(--motion-spring-snappy)",
@@ -221,9 +306,23 @@ export const modifiersTheme = {
     "in-out-quart": "cubic-bezier(.77, 0, .175, 1)",
     "in-out-back": "cubic-bezier(0.68,-0.55,0.27,1.55)",
   }),
-  animationDuration: (theme) => ({
+  motionDuration: (
+    theme: (path: keyof ThemeConfig) => Record<string, string>
+  ) => ({
     ...theme("transitionDuration"),
     1500: "1500ms",
     2000: "2000ms",
+    DEFAULT: "750ms",
   }),
+  motionDelay: (
+    theme: (path: keyof ThemeConfig) => Record<string, string>
+  ) => ({
+    ...theme("motionDuration"),
+    DEFAULT: "0ms",
+  }),
+  motionLoopCount: {
+    infinite: "infinite",
+    once: "1",
+    twice: "2",
+  },
 };
