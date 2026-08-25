@@ -30,7 +30,7 @@ const EASING_KEYWORDS = [
 
 const isEasingToken = (token: string): boolean =>
   EASING_KEYWORDS.includes(token) ||
-  /^(cubic-bezier|steps|linear)\(/.test(token) ||
+  /^(cubic-bezier|steps|linear|spring)\(/.test(token) ||
   /^var\(--motion-(spring-[\w-]+|bounce)\)$/.test(token);
 
 /**

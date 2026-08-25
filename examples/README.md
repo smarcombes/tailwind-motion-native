@@ -27,5 +27,18 @@ would upload and installs that instead.
 | [`examples/escape-hatches.tsx`](./expo-nativewind/examples/escape-hatches.tsx) | `motion()` and `useMotion()` |
 | [`app/index.tsx`](./expo-nativewind/app/index.tsx) | The gallery that renders them all |
 
+And a second screen, [`app/nativewind.tsx`](./expo-nativewind/app/nativewind.tsx),
+puts Nativewind's own animation classes next to this package where they differ:
+
+| File | Shows |
+| --- | --- |
+| [`examples/comparison-springs.tsx`](./expo-nativewind/examples/comparison-springs.tsx) | A hand-authored cubic-bezier overshoot vs a real spring whose damping comes from state |
+| [`examples/comparison-stagger.tsx`](./expo-nativewind/examples/comparison-stagger.tsx) | One compiled class for every row vs a per-row delay you can change at runtime |
+| [`examples/showcase-shuffle.tsx`](./expo-nativewind/examples/showcase-shuffle.tsx) | Twelve spring recipes, re-rolled on every tap |
+
+The Nativewind column uses real compiled keyframes from
+[`tailwind.config.js`](./expo-nativewind/tailwind.config.js), so it animates —
+the point is what it can't be told to do, not that it does nothing.
+
 Each section in the app has a Replay button, which remounts that example so you
 can watch the enter animations again.

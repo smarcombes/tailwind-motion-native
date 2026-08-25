@@ -55,6 +55,17 @@ const parseCubicBezier = (value: string): MotionEasing | null => {
   };
 };
 
+/**
+ * `spring(0.4)` — an extension to the tailwindcss-motion vocabulary, because
+ * native has a spring primitive and CSS does not. The argument is the damping
+ * ratio: 1 settles without overshooting, 0.2 bounces hard.
+ */
+const parseSpring = (value: string): MotionEasing | null => {
+  const dampingRatio = Number.parseFloat(value.slice("spring(".length, -1));
+  if (!Number.isFinite(dampingRatio) || dampingRatio <= 0) return null;
+  return { type: "spring", dampingRatio: Math.min(dampingRatio, 5) };
+};
+
 const parseSteps = (value: string): MotionEasing | null => {
   const args = splitTopLevel(value.slice("steps(".length, -1), ",");
   const count = Number.parseInt(args[0] ?? "", 10);
@@ -112,6 +123,10 @@ export const parseEasing = (raw: string | undefined): MotionEasing => {
 
   if (value.startsWith("steps(") && value.endsWith(")")) {
     return parseSteps(value) ?? DEFAULT_EASING;
+  }
+
+  if (value.startsWith("spring(") && value.endsWith(")")) {
+    return parseSpring(value) ?? DEFAULT_EASING;
   }
 
   if (value.startsWith("linear(") && value.endsWith(")")) {

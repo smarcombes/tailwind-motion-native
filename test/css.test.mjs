@@ -91,6 +91,11 @@ test("parseAnimationShorthand classifies tokens by shape", () => {
   assert.equal(seconds.direction, "alternate");
 });
 
+const DEFAULT_BEZIER = {
+  type: "bezier",
+  points: [0.165, 0.84, 0.44, 1],
+};
+
 test("parseEasing recovers spring damping ratios", () => {
   assert.deepEqual(parseEasing("var(--motion-spring-smooth)"), {
     type: "spring",
@@ -107,6 +112,13 @@ test("parseEasing recovers spring damping ratios", () => {
     count: 4,
     position: "start",
   });
+
+  // `spring()` has no CSS equivalent; it exists because native has springs.
+  assert.deepEqual(parseEasing("spring(0.42)"), {
+    type: "spring",
+    dampingRatio: 0.42,
+  });
+  assert.deepEqual(parseEasing("spring(nonsense)"), DEFAULT_BEZIER);
 
   // An unrecognised spring curve is measured from its overshoot instead.
   const measured = parseEasing("linear(0, 0.5, 1.163 30%, 1.02, 1)");

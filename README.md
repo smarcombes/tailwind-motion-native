@@ -179,6 +179,57 @@ Already on [Moti](https://moti.fyi)? `resolveMotiProps()` returns `from`,
 
 ---
 
+## Why not just Nativewind's `animate-*`?
+
+Nativewind already runs keyframe animations: `animate-spin`, `animate-pulse`, and
+your own keyframes from `tailwind.config.js`. If your animation is fixed and you
+are happy writing keyframes, you may not need this package.
+
+Two things a CSS animation class can't do, and this is what the
+[`/nativewind`](./examples/expo-nativewind/app/nativewind.tsx) screen in the
+example app demonstrates side by side:
+
+**1. Springs.** Nativewind v4 drives animations with `withTiming` and an
+ease / cubic-bezier / steps curve. Nativewind v5 hands them to Reanimated's CSS
+animations, whose easings are cubic-bezier, `linear()` and steps. Neither has a
+spring, because CSS doesn't — the closest a class gets is an overshoot drawn by
+hand into a keyframe, fixed at build time. Here, tailwindcss-motion's spring
+easings become real `withSpring` calls, and
+
+```tsx
+<Motion.View className={`motion-scale-in-50 motion-ease-[spring(${damping})]`} />
+```
+
+takes the damping ratio from state. (`spring()` is the one addition to the
+tailwindcss-motion vocabulary, for exactly this reason.)
+
+**2. Values that don't exist at build time.** Tailwind compiles CSS before your
+app runs, so `animate-[slide_700ms_${index * 110}ms_both]` is a class nobody
+generated. Because the class string is parsed at runtime here, every number can
+be arithmetic — from an index, a measurement, state, or data:
+
+```tsx
+// A stagger whose step is a state variable
+className={`motion-preset-slide-left motion-delay-[${index * step}ms]`}
+
+// A different spring recipe per item, re-rolled on every tap
+className={`motion-translate-y-in-[${distance}%] motion-rotate-in-[${angle}deg]
+            motion-duration-[${duration}ms] motion-ease-[spring(${damping})]`}
+```
+
+Measured on that comparison screen: a compiled `animate-slide-in` on five rows
+moves all five opacities in lockstep (`0.21, 0.21, 0.21, 0.21, 0.21` sixty
+milliseconds in), while `motion-delay-[${index * 110}ms]` offsets them
+(`0.27, 0, 0, 0, 0`) — and switching the step to 60ms re-spaces them without
+touching the stylesheet.
+
+What you *don't* get in exchange: this runs animations from JavaScript, so it is
+Reanimated's shared values rather than Nativewind's own engine, and the class
+resolution (cached per class string) happens at runtime rather than at build
+time.
+
+---
+
 ## What's supported
 
 | Classes | Support | Notes |
@@ -189,6 +240,7 @@ Already on [Moti](https://moti.fyi)? `resolveMotiProps()` returns `from`,
 | `motion-{blur,grayscale}-{in,out,loop}-*` | ✅ | Uses React Native's `filter` (New Architecture); `configureMotion({ enableFilters: false })` to opt out |
 | `motion-{bg,text}-{in,out,loop}-*` | ✅ | Animates to/from the element's own `bg-*` / `text-*` colour |
 | `motion-duration-*`, `motion-delay-*`, `motion-ease-*`, `motion-loop-*` | ✅ | Global, per property (`/rotate`), and arbitrary (`motion-duration-[1.5s]`) |
+| `motion-ease-[spring(0.3)]` | ➕ | Not in tailwindcss-motion: a spring with the damping ratio you pass, since native has springs and CSS doesn't |
 | `motion-*-out` exit animations | ⚠️ | Resolved, but you trigger them: `useMotion().playExit()` or Moti's `<AnimatePresence>` |
 | `motion-preset-confetti`, `motion-preset-typewriter`, `motion-preset-flomoji` | ❌ | Need pseudo-elements and text metrics; a warning tells you they were ignored |
 | `motion-paused` / `motion-running` | ❌ | |

@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -92,6 +92,12 @@ export default function Home() {
           source="escape-hatches.tsx">
           <EscapeHatches />
         </Section>
+
+        <Link
+          href="/nativewind"
+          className="rounded-2xl border border-lime-900 bg-lime-400/5 p-4 text-center text-[12px] font-medium text-lime-300">
+          What classes alone can&apos;t do → springs, runtime values, random recipes
+        </Link>
 
         <Text className="pt-4 text-center text-[11px] text-slate-600">
           tailwind-motion-native · Expo + Nativewind + Reanimated
