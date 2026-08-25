@@ -10,8 +10,15 @@ npm test        # builds, then runs the unit tests
 npm run typecheck
 ```
 
-The tests run in plain Node against `dist/module/core`, because everything up to
-"here is the animation data" is deliberately free of React Native imports.
+There are two test suites:
+
+- `npm run test:unit` — plain Node against `dist/module/core`. Everything up to
+  "here is the animation data" is deliberately free of React Native imports, so
+  it needs no renderer.
+- `npm run test:native` — Jest with React Native's iOS preset. These render the
+  real `Motion.*` components to check that the Nativewind interop and the
+  Reanimated wrapper cooperate, and they step Reanimated's clock to assert that
+  animations, delays, loops and replays behave.
 
 ```bash
 npm run demo                                   # all presets

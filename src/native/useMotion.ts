@@ -64,6 +64,8 @@ type Plan = {
   spec: MotionSpec;
   /** Where each property sits before the animation starts. */
   initial: Record<NumericProperty, number>;
+  /** Where each property ends up, for `motionEnabled={false}` and reduced motion. */
+  settled: Record<NumericProperty, number>;
   units: Record<NumericProperty, string>;
   animated: Record<MotionProperty, boolean>;
   colors: {
@@ -80,6 +82,7 @@ const numberOf = (animation: MotionAnimation, end: "from" | "to"): number => {
 
 const buildPlan = (spec: MotionSpec): Plan => {
   const initial = { ...BASE_VALUE };
+  const settled = { ...BASE_VALUE };
   const units: Record<string, string> = {};
   const animated: Record<string, boolean> = {};
   const colors: Plan["colors"] = {};
@@ -122,14 +125,19 @@ const buildPlan = (spec: MotionSpec): Plan => {
         : animation.from.unit || animation.to.unit;
 
     if (byProperty.get(property) === animation) {
-      initial[property] =
-        animation.phase === "exit" ? animation.from.value : numberOf(animation, "from");
+      initial[property] = numberOf(animation, "from");
+      // A loop settles back where it started; everything else at its target.
+      settled[property] =
+        animation.phase === "loop"
+          ? numberOf(animation, "from")
+          : numberOf(animation, "to");
     }
   });
 
   return {
     spec,
     initial,
+    settled,
     units: units as Record<NumericProperty, string>,
     animated: animated as Record<MotionProperty, boolean>,
     colors,
@@ -160,16 +168,33 @@ export const useMotion = (
     warnUnsupported(plan.spec.unsupportedClasses);
   }, [plan]);
 
+  // Rendering the first frame at the animation's starting point is what makes an
+  // enter animation look right, so the starting values are picked before the
+  // shared values exist rather than in an effect.
+  const start = useMemo(() => {
+    if (!enabled) return plan.settled;
+    if (!(config.respectReducedMotion && reducedMotion)) return plan.initial;
+
+    const values = { ...plan.initial };
+    MOVEMENT_PROPERTIES.forEach((property) => {
+      if (property in values) {
+        const key = property as NumericProperty;
+        values[key] = plan.settled[key];
+      }
+    });
+    return values;
+  }, [plan, enabled, reducedMotion, config.respectReducedMotion]);
+
   // A fixed set of shared values keeps the hook order stable no matter which
   // classes are used.
-  const translateX = useSharedValue(plan.initial.translateX);
-  const translateY = useSharedValue(plan.initial.translateY);
-  const rotate = useSharedValue(plan.initial.rotate);
-  const scaleX = useSharedValue(plan.initial.scaleX);
-  const scaleY = useSharedValue(plan.initial.scaleY);
-  const opacity = useSharedValue(plan.initial.opacity);
-  const blur = useSharedValue(plan.initial.blur);
-  const grayscale = useSharedValue(plan.initial.grayscale);
+  const translateX = useSharedValue(start.translateX);
+  const translateY = useSharedValue(start.translateY);
+  const rotate = useSharedValue(start.rotate);
+  const scaleX = useSharedValue(start.scaleX);
+  const scaleY = useSharedValue(start.scaleY);
+  const opacity = useSharedValue(start.opacity);
+  const blur = useSharedValue(start.blur);
+  const grayscale = useSharedValue(start.grayscale);
   const backgroundProgress = useSharedValue(0);
   const colorProgress = useSharedValue(0);
 

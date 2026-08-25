@@ -229,8 +229,10 @@ There is no build step, and no CSS.
 4. `useMotion` plays that data with Reanimated shared values, and hands the
    leftover classes to Nativewind.
 
-Because step 1–3 are pure data, they are covered by unit tests, including a guard
-that every class the plugin can generate still resolves to a native animation.
+Because steps 1–3 are pure data, they are covered by plain Node tests — including
+a guard that every class the plugin can generate still resolves to a native
+animation. Step 4 is covered by Jest tests that render the components on the
+native code path and step Reanimated's clock.
 
 ## Compatibility
 

@@ -65,7 +65,7 @@ export const motion = <P extends { style?: unknown }>(
           ref={ref}
           {...rest}
           className={motionState.className}
-          style={[style, motionState.style]}
+          style={style ? [style, motionState.style] : motionState.style}
         />
       );
     }
