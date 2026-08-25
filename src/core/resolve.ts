@@ -87,6 +87,24 @@ const isMotionClass = (className: string): boolean =>
   className.startsWith("motion-") || className.startsWith("-motion-");
 
 /**
+ * A list of 100 rows usually means 100 identical class strings, and resolution
+ * is deterministic, so the result is worth keeping. Only the common case (no
+ * caller supplied colours) is cached, keyed by the class string itself.
+ */
+const CACHE_LIMIT = 500;
+const cache = new Map<string, MotionSpec>();
+
+const cached = (key: string, resolve: () => MotionSpec): MotionSpec => {
+  const hit = cache.get(key);
+  if (hit) return hit;
+
+  const spec = resolve();
+  if (cache.size >= CACHE_LIMIT) cache.clear();
+  cache.set(key, spec);
+  return spec;
+};
+
+/**
  * Resolves a Tailwind class string into native animations.
  *
  * Everything happens in plain JavaScript: the tailwindcss-motion plugin runs
@@ -102,6 +120,15 @@ export const resolveMotion = (
     return { ...EMPTY_MOTION_SPEC, className: className ?? "" };
   }
 
+  return options.baseColors
+    ? resolveMotionUncached(className, options)
+    : cached(className, () => resolveMotionUncached(className, options));
+};
+
+const resolveMotionUncached = (
+  className: string,
+  options: ResolveMotionOptions
+): MotionSpec => {
   const engine = getEngine();
   const tokens = className.split(/\s+/).filter((token) => token.length > 0);
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import type { LayoutChangeEvent } from "react-native";
 import {
   cancelAnimation,
   interpolateColor,
@@ -73,6 +74,8 @@ type Plan = {
     color?: { from: string; to: string };
   };
   enterDuration: number;
+  /** `true` when a translate animation is expressed as a percentage. */
+  usesTranslatePercentage: boolean;
 };
 
 const numberOf = (animation: MotionAnimation, end: "from" | "to"): number => {
@@ -142,6 +145,8 @@ const buildPlan = (spec: MotionSpec): Plan => {
     animated: animated as Record<MotionProperty, boolean>,
     colors,
     enterDuration,
+    usesTranslatePercentage:
+      units.translateX === "%" || units.translateY === "%",
   };
 };
 
@@ -197,6 +202,8 @@ export const useMotion = (
   const grayscale = useSharedValue(start.grayscale);
   const backgroundProgress = useSharedValue(0);
   const colorProgress = useSharedValue(0);
+  const layoutWidth = useSharedValue(0);
+  const layoutHeight = useSharedValue(0);
 
   const values = useMemo<Record<NumericProperty, SharedValue<number>>>(
     () => ({
@@ -319,19 +326,44 @@ export const useMotion = (
   const withFilters =
     config.enableFilters && (animated.blur || animated.grayscale);
 
+  // Percentages are relative to the element's own size, like CSS. Measuring the
+  // element keeps that working on every React Native version; `"50%"` in a
+  // transform only works on the New Architecture.
+  const fromLayout =
+    plan.usesTranslatePercentage && config.translatePercentage === "layout";
+
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      layoutWidth.value = event.nativeEvent.layout.width;
+      layoutHeight.value = event.nativeEvent.layout.height;
+    },
+    [layoutWidth, layoutHeight]
+  );
+
   const style = useAnimatedStyle(() => {
     const transform: Record<string, number | string>[] = [];
 
+    const translate = (value: number, unit: string, size: number) => {
+      if (unit !== "%") return value;
+      return fromLayout ? (value / 100) * size : `${value}%`;
+    };
+
     if (animated.translateX) {
       transform.push({
-        translateX:
-          units.translateX === "%" ? `${translateX.value}%` : translateX.value,
+        translateX: translate(
+          translateX.value,
+          units.translateX,
+          layoutWidth.value
+        ),
       });
     }
     if (animated.translateY) {
       transform.push({
-        translateY:
-          units.translateY === "%" ? `${translateY.value}%` : translateY.value,
+        translateY: translate(
+          translateY.value,
+          units.translateY,
+          layoutHeight.value
+        ),
       });
     }
     if (animated.rotate) transform.push({ rotate: `${rotate.value}deg` });
@@ -362,7 +394,7 @@ export const useMotion = (
     }
 
     return next;
-  }, [plan, withFilters]);
+  }, [plan, withFilters, fromLayout]);
 
   const replay = useCallback(() => run("enter"), [run]);
   const playExit = useCallback(() => run("exit"), [run]);
@@ -370,6 +402,8 @@ export const useMotion = (
   return {
     /** Animated style to spread onto a Reanimated component. */
     style,
+    /** Attach this when it is defined: percentages need the element's size. */
+    onLayout: fromLayout ? onLayout : undefined,
     /** The classes that weren't `motion-*`, for Nativewind. */
     className: plan.spec.className,
     /** Everything the resolver understood, handy for debugging. */

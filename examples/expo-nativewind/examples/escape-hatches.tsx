@@ -25,8 +25,10 @@ export default function EscapeHatches() {
         <Motion.Text className="text-[10px] text-slate-500">any component</Motion.Text>
       </MotionCard>
 
-      {/* A plain Reanimated view: no className, just the style from the hook. */}
+      {/* A plain Reanimated view: no className, just the style from the hook.
+          onLayout is what lets percentage-based slides know how far to travel. */}
       <Animated.View
+        onLayout={motionState.onLayout}
         style={[
           motionState.style,
           { flex: 1, gap: 4, borderRadius: 16, padding: 16, backgroundColor: '#0f172a' },

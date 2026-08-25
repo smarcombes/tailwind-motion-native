@@ -1,6 +1,6 @@
-import { render } from "react-native-css-interop/test";
+import { fireEvent, render } from "react-native-css-interop/test";
 import { advanceAnimationByTime, getAnimatedStyle } from "react-native-reanimated";
-import { Motion } from "../src/index";
+import { configureMotion, Motion } from "../src/index";
 
 /**
  * The interesting part on native is that two wrappers have to cooperate: the
@@ -43,7 +43,54 @@ test("motion-* classes never reach Nativewind", () => {
   expect(props.className).toBeUndefined();
   expect(style.color).toBe("#0000ff");
   expect(style.opacity).toBe(0);
-  expect(style.transform).toEqual([{ translateY: "25%" }]);
+  // 25% of a height nothing has measured yet.
+  expect(style.transform).toEqual([{ translateY: 0 }]);
+});
+
+test("translate percentages are resolved from the element's measured size", () => {
+  jest.useFakeTimers();
+
+  const tree = render(
+    <Motion.View testID="box" className="motion-preset-slide-up" />
+  );
+  const box = tree.getByTestId("box");
+
+  fireEvent(box, "layout", {
+    nativeEvent: { layout: { width: 100, height: 200 } },
+  });
+
+  const translateY = (): number => {
+    const transform = getAnimatedStyle(box).transform as Array<{
+      translateY: number;
+    }>;
+    return transform[0].translateY;
+  };
+
+  // `motion-preset-slide-up` starts 25% of the element's height below its
+  // resting place, so a frame into a 700ms animation it is still near 50px.
+  advanceAnimationByTime(16);
+  expect(translateY()).toBeGreaterThan(35);
+  expect(translateY()).toBeLessThan(50);
+
+  advanceAnimationByTime(1000);
+  expect(translateY()).toBe(0);
+
+  jest.useRealTimers();
+});
+
+test("percentages can be handed to the transform instead", () => {
+  configureMotion({ translatePercentage: "transform" });
+
+  try {
+    const tree = render(
+      <Motion.View testID="box" className="motion-preset-slide-up" />
+    );
+    expect(getAnimatedStyle(tree.getByTestId("box")).transform).toEqual([
+      { translateY: "25%" },
+    ]);
+  } finally {
+    configureMotion({ translatePercentage: "layout" });
+  }
 });
 
 test("the animation actually runs", () => {
@@ -152,7 +199,7 @@ test("motionEnabled={false} jumps to the final state", () => {
 
   const style = getAnimatedStyle(tree.getByTestId("box"));
   expect(style.opacity).toBe(1);
-  expect(style.transform).toEqual([{ translateY: "0%" }]);
+  expect(style.transform).toEqual([{ translateY: 0 }]);
 });
 
 test("elements without motion classes are left alone", () => {

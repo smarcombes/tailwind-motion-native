@@ -164,8 +164,10 @@ import { motion, useMotion } from 'tailwind-motion-native';
 const MotionCard = motion(Card); // any component from your design system
 
 function Chart() {
-  const { style, className } = useMotion('motion-preset-expand motion-duration-1000');
-  return <Animated.View style={style} />;
+  // onLayout is only defined when the animation moves by a percentage, which is
+  // measured from the element.
+  const { style, onLayout } = useMotion('motion-preset-slide-up motion-duration-1000');
+  return <Animated.View style={style} onLayout={onLayout} />;
 }
 ```
 
@@ -183,7 +185,7 @@ Already on [Moti](https://moti.fyi)? `resolveMotiProps()` returns `from`,
 | --- | --- | --- |
 | `motion-preset-*` enter presets<br>(`fade`, `slide-*`, `rebound-*`, `focus`, `blur-*`, `bounce`, `expand`, `shrink`, `pop`, `compress`, `shake`, `wiggle`) | ✅ | Including the `-sm` / `-md` / `-lg` sizes |
 | `motion-preset-*` loop presets<br>(`spin`, `pulse`, `blink`, `float`, `wobble`, `seesaw`, `oscillate`, `stretch`) | ✅ | |
-| `motion-{scale,translate-x,translate-y,rotate,opacity}-{in,out,loop}-*` | ✅ | Percentages are relative to the element, like CSS |
+| `motion-{scale,translate-x,translate-y,rotate,opacity}-{in,out,loop}-*` | ✅ | Percentages are relative to the element, like CSS: it is measured, so this works on both architectures |
 | `motion-{blur,grayscale}-{in,out,loop}-*` | ✅ | Uses React Native's `filter` (New Architecture); `configureMotion({ enableFilters: false })` to opt out |
 | `motion-{bg,text}-{in,out,loop}-*` | ✅ | Animates to/from the element's own `bg-*` / `text-*` colour |
 | `motion-duration-*`, `motion-delay-*`, `motion-ease-*`, `motion-loop-*` | ✅ | Global, per property (`/rotate`), and arbitrary (`motion-duration-[1.5s]`) |
@@ -205,10 +207,10 @@ still animate), matching tailwindcss-motion's `prefers-reduced-motion` behaviour
 | --- | --- |
 | `Motion.View` / `.Text` / `.Image` / `.ScrollView` | Drop-in primitives that understand `motion-*` classes |
 | `motion(Component)` | Turns any style+ref forwarding component into a motion primitive |
-| `useMotion(className, options)` | `{ style, className, spec, replay, playExit }` |
+| `useMotion(className, options)` | `{ style, onLayout, className, spec, replay, playExit }` |
 | `resolveMotiProps(className)` | Moti `from` / `animate` / `exit` / `transition` props |
 | `resolveMotion(className)` | The raw animation data, no React Native needed (`tailwind-motion-native/core`) |
-| `configureMotion(config)` | `enableFilters`, `respectReducedMotion`, `warnOnUnsupported` |
+| `configureMotion(config)` | `enableFilters`, `translatePercentage`, `respectReducedMotion`, `warnOnUnsupported` |
 
 Component props: `className`, `motionKey` (replay), `motionEnabled`,
 `onMotionEnd`, plus everything the underlying component accepts.

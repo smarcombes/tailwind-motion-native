@@ -6,6 +6,17 @@ export type MotionConfig = {
    */
   enableFilters: boolean;
   /**
+   * How `translate` percentages (`motion-preset-slide-*`,
+   * `motion-translate-y-in-50`, ...) become pixels.
+   *
+   * - `layout` measures the element and does the maths, which works on every
+   *   React Native version and architecture.
+   * - `transform` passes `"50%"` straight to the transform, which needs React
+   *   Native 0.75+ *and* the New Architecture (it throws on old-architecture
+   *   Android) but needs no measurement.
+   */
+  translatePercentage: "layout" | "transform";
+  /**
    * Skip transform animations when the OS asks for reduced motion, mirroring
    * what tailwindcss-motion does with `prefers-reduced-motion`. Opacity, colour
    * and filter animations keep playing.
@@ -17,6 +28,7 @@ export type MotionConfig = {
 
 const config: MotionConfig = {
   enableFilters: true,
+  translatePercentage: "layout",
   respectReducedMotion: true,
   warnOnUnsupported: true,
 };
