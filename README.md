@@ -175,7 +175,10 @@ Already on [Moti](https://moti.fyi)? `resolveMotiProps()` returns `from`,
 `animate`, `exit` and `transition` for a class string.
 
 > **All of these examples are runnable in [`/examples`](./examples)** —
-> `cd examples/expo-nativewind && npm install && npx expo start`.
+> `cd examples/expo-nativewind && npm install && npx expo start`, then press `i`
+> for the iOS simulator or scan the QR code with Expo Go. The same app also
+> recreates [all six tailwindcss-motion Tailwind Play examples](./examples#rombos-examples-on-device)
+> for iOS and Android.
 
 ---
 
