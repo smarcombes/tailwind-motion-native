@@ -228,6 +228,14 @@ Reanimated's shared values rather than Nativewind's own engine, and the class
 resolution (cached per class string) happens at runtime rather than at build
 time.
 
+For a concrete accounting, [docs/nativewind-parity.md](./docs/nativewind-parity.md)
+goes through the six tailwindcss-motion Tailwind Play examples and marks which of
+their 58 animated elements Nativewind can reproduce on iOS/Android by itself (27)
+and which need a spring, a `linear()` curve or an animated blur (31). It also
+records what happens if you simply add `tailwindcss-motion` to a Nativewind
+config: it compiles, and plays nothing. Both are measured by
+`npm run probe:nativewind`.
+
 ---
 
 ## What's supported

@@ -70,7 +70,8 @@
     "prepublishOnly": "npm run clean && npm run typecheck && npm test",
     "prepare": "bob build",
     "test:unit": "node --test test/*.test.mjs",
-    "test:native": "jest"
+    "test:native": "jest",
+    "probe:nativewind": "jest --testMatch \"<rootDir>/test/**/*.probe.tsx\""
   },
   "peerDependencies": {
     "nativewind": ">=4.1.0",
@@ -80,6 +81,7 @@
   },
   "devDependencies": {
     "@react-native/babel-preset": "^0.81.4",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@testing-library/react-native": "13.3.3",
     "@types/react": "^19.0.0",
     "jest": "^29.7.0",
@@ -90,6 +92,7 @@
     "react-native-reanimated": "^3.19.1",
     "react-test-renderer": "19.1.0",
     "tailwindcss": "^3.4.17",
+    "tailwindcss-motion": "^1.1.1",
     "typescript": "^5.9.2"
   },
   "react-native-builder-bob": {
