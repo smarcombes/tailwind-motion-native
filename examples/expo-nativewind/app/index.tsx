@@ -94,8 +94,14 @@ export default function Home() {
         </Section>
 
         <Link
-          href="/nativewind"
+          href="/rombo"
           className="rounded-2xl border border-lime-900 bg-lime-400/5 p-4 text-center text-[12px] font-medium text-lime-300">
+          Rombo&apos;s six Tailwind Play examples, rebuilt for iOS &amp; Android →
+        </Link>
+
+        <Link
+          href="/nativewind"
+          className="rounded-2xl border border-slate-800 bg-slate-900 p-4 text-center text-[12px] font-medium text-slate-300">
           What classes alone can&apos;t do → springs, runtime values, random recipes
         </Link>
 

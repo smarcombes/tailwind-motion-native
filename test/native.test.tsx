@@ -188,6 +188,26 @@ test("motionKey replays the animation", () => {
   jest.useRealTimers();
 });
 
+test("colour loops animate from the element's own Tailwind colour", () => {
+  jest.useFakeTimers();
+
+  const tree = render(
+    <Motion.Text
+      testID="label"
+      className="motion-text-loop-[#f8ff8c] motion-duration-[200ms] text-black">
+      Rombo
+    </Motion.Text>
+  );
+  const label = tree.getByTestId("label");
+
+  expect(getAnimatedStyle(label).color).toBe("rgba(0, 0, 0, 1)");
+
+  advanceAnimationByTime(50);
+  expect(getAnimatedStyle(label).color).not.toBe("rgba(0, 0, 0, 1)");
+
+  jest.useRealTimers();
+});
+
 test("motionEnabled={false} jumps to the final state", () => {
   const tree = render(
     <Motion.View

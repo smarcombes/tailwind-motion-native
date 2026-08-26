@@ -75,7 +75,15 @@ export const resolveVars = (
     } else if (vars[name] !== undefined && vars[name] !== "" && !seen.has(name)) {
       replacement = resolve(vars[name], new Set([...seen, name]));
     } else if (fallback) {
-      replacement = resolve(fallback, seen);
+      // tailwindcss-motion v1.1.1 writes two fallbacks as a bare `--motion-x`
+      // instead of `var(--motion-x)` (the `motion-text-color-out` and
+      // `motion-text-color-loop` animations), which makes those declarations
+      // invalid in a browser too. Reading the intent keeps `motion-text-*`
+      // usable here.
+      replacement = resolve(
+        /^--[\w-]+$/.test(fallback) ? `var(${fallback})` : fallback,
+        seen
+      );
     } else {
       replacement = "";
     }

@@ -39,6 +39,15 @@ test("resolveVars follows fallbacks and nested references", () => {
   assert.equal(resolveVars("var(--nothing)", vars), "");
 });
 
+test("resolveVars reads a bare custom property fallback as a reference", () => {
+  // Upstream's `motion-text-color-loop` animation writes `--motion-duration`
+  // where it means `var(--motion-duration)`.
+  assert.equal(
+    resolveVars("var(--missing, --duration)", { "--duration": "700ms" }),
+    "700ms"
+  );
+});
+
 test("resolveVars can keep custom properties symbolic", () => {
   const vars = { "--motion-spring-bouncy": "linear(0, 0.5, 1)" };
   assert.equal(
