@@ -28,7 +28,9 @@ export default function Loop() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View className="h-72 w-full items-center justify-center">
+        {/* A fixed stage, so the pieces stay around the wordmark rather than
+            spreading to the edges of whatever window this runs in. */}
+        <View className="h-72 w-80 items-center justify-center">
           {/* Two counter-rotating gears, on a rotated wrapper. */}
           <View className="absolute left-6 top-4 -rotate-45 flex-row">
             <Motion.Text className="motion-rotate-loop-[360deg]/reset motion-duration-2000 motion-ease-linear text-5xl">

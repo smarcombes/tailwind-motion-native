@@ -41,7 +41,9 @@ export function ExampleScreen({ title, play, notes, children }: Props) {
         </Pressable>
       </View>
 
-      <View key={run} className="flex-1">
+      {/* These are phone layouts, so the recreations get a phone's width even
+          when the app is running in a desktop browser. */}
+      <View key={run} className="w-full max-w-md flex-1 self-center">
         {children}
       </View>
 
