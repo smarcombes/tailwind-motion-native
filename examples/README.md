@@ -30,6 +30,28 @@ The animations that need the New Architecture (blur, and percentage translates i
 you switch `configureMotion({ translatePercentage: 'transform' })`) work in Expo
 Go for SDK 54+, where the New Architecture is the default.
 
+## Running it on an Android Studio emulator
+
+```bash
+# Android Studio → Device Manager → create/start a device (Pixel 7, API 35 is fine)
+cd examples/expo-nativewind
+npm install
+npx expo start --android   # installs Expo Go on the emulator and opens the app
+```
+
+If the emulator is already running, `npx expo start` then pressing `a` does the
+same thing. To reach a screen directly:
+
+```bash
+adb reverse tcp:8081 tcp:8081
+adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081/--/rombo/island"
+```
+
+Give the emulator hardware acceleration (Android Studio does this by default via
+KVM on Linux, HAXM/Hypervisor.Framework on macOS). Without it the emulator falls
+back to a software CPU and renders single-digit frames per second, which says
+nothing about how the animations run on a device.
+
 `npm install` picks up the library from the repo root (`file:../..` with
 `install-links=true`, so the example gets a real copy of the built package rather
 than a symlink). After changing library source, re-run `npm install` — or, from

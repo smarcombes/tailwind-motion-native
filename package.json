@@ -70,8 +70,9 @@
     "prepublishOnly": "npm run clean && npm run typecheck && npm test",
     "prepare": "bob build",
     "test:unit": "node --test test/*.test.mjs",
-    "test:native": "jest",
-    "probe:nativewind": "jest --testMatch \"<rootDir>/test/**/*.probe.tsx\""
+    "test:native": "jest && jest --config jest.config.android.cjs",
+    "probe:nativewind": "jest --testMatch \"<rootDir>/test/**/*.probe.tsx\"",
+    "test:native:android": "jest --config jest.config.android.cjs"
   },
   "peerDependencies": {
     "nativewind": ">=4.1.0",
