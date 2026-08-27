@@ -12,6 +12,30 @@ npm install         # builds the local package and installs it
 npx expo start      # then press i, a, or w
 ```
 
+## Running it on your own phone with Expo Go
+
+```bash
+git clone https://github.com/smarcombes/tailwind-motion-native
+cd tailwind-motion-native/examples/expo-nativewind
+npm install
+npx expo start          # add --tunnel if your phone isn't on the same network
+```
+
+Then open the project in Expo Go. One catch that has nothing to do with this
+library: **each Expo Go build contains exactly one SDK version**, and this app is
+on the SDK that `npx rn-new@latest --nativewind` scaffolds (see `expo` in
+[package.json](./expo-nativewind/package.json)).
+
+| You have | What to do |
+| --- | --- |
+| Android phone | Install the matching Expo Go from [expo.dev/go](https://expo.dev/go) (pick this project's SDK), then scan the QR code. With USB debugging on, `npx expo start --android` installs it for you. |
+| iPhone | The App Store build currently stops at SDK 54, so for a newer SDK get a build from [sign.expo.dev](https://sign.expo.dev) (free, a few minutes), then scan the QR code with the Camera app. |
+| iOS Simulator | `npx expo start --ios` — the CLI installs the right Expo Go build itself. |
+| Android emulator | `npx expo start --android`, or press `a`. Same thing. |
+
+If none of that appeals, `npx expo run:android` / `run:ios` builds the app
+directly and skips Expo Go entirely.
+
 ## Running it on iOS
 
 Nothing here needs a custom native build: the app uses Reanimated,

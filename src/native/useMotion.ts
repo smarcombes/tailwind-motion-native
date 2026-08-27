@@ -244,12 +244,17 @@ export const useMotion = (
         }
       });
 
+      const scale = Math.max(config.timeScale, 0.01);
+
       animations.forEach((animation) => {
         const isExit = animation.phase === "exit";
         if (phase === "exit" ? !isExit : isExit) return;
 
         const shared = sharedFor(animation.property);
         if (!shared) return;
+
+        const duration = animation.duration * scale;
+        const delay = animation.delay * scale;
 
         const isColor = animation.from.kind === "color";
         const from = isColor ? 0 : numberOf(animation, "from");
@@ -270,20 +275,16 @@ export const useMotion = (
         if (animation.phase === "loop") {
           const mirror = animation.loopMode !== "reset";
           const enter = enterByProperty.get(animation.property);
-          const leadIn = enter ? enter.delay + enter.duration : 0;
+          const leadIn = enter ? (enter.delay + enter.duration) * scale : 0;
           const iterations =
             animation.iterations < 0
               ? -1
               : Math.max(1, Math.round(animation.iterations));
 
           shared.value = withDelay(
-            animation.delay + leadIn,
+            delay + leadIn,
             withRepeat(
-              buildAnimation(
-                to,
-                animation.easing,
-                mirror ? animation.duration / 2 : animation.duration
-              ),
+              buildAnimation(to, animation.easing, mirror ? duration / 2 : duration),
               mirror && iterations > 0 ? iterations * 2 : iterations,
               mirror
             )
@@ -292,19 +293,29 @@ export const useMotion = (
         }
 
         shared.value = withDelay(
-          animation.delay,
-          buildAnimation(to, animation.easing, animation.duration)
+          delay,
+          buildAnimation(to, animation.easing, duration)
         );
       });
     },
-    [plan, enabled, reducedMotion, config.respectReducedMotion, sharedFor]
+    [
+      plan,
+      enabled,
+      reducedMotion,
+      config.respectReducedMotion,
+      config.timeScale,
+      sharedFor,
+    ]
   );
 
   useEffect(() => {
     run("enter");
 
     if (onMotionEnd && plan.enterDuration > 0) {
-      endTimeout.current = setTimeout(onMotionEnd, plan.enterDuration);
+      endTimeout.current = setTimeout(
+        onMotionEnd,
+        plan.enterDuration * Math.max(config.timeScale, 0.01)
+      );
     }
 
     return () => {

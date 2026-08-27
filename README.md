@@ -273,10 +273,13 @@ still animate), matching tailwindcss-motion's `prefers-reduced-motion` behaviour
 | `useMotion(className, options)` | `{ style, onLayout, className, spec, replay, playExit }` |
 | `resolveMotiProps(className)` | Moti `from` / `animate` / `exit` / `transition` props |
 | `resolveMotion(className)` | The raw animation data, no React Native needed (`tailwind-motion-native/core`) |
-| `configureMotion(config)` | `enableFilters`, `translatePercentage`, `respectReducedMotion`, `warnOnUnsupported` |
+| `configureMotion(config)` | `enableFilters`, `translatePercentage`, `respectReducedMotion`, `warnOnUnsupported`, `timeScale` |
 
 Component props: `className`, `motionKey` (replay), `motionEnabled`,
 `onMotionEnd`, plus everything the underlying component accepts.
+
+`configureMotion({ timeScale: 4 })` runs every animation at quarter speed, which
+is the quickest way to see what a choreography is actually doing.
 
 ## How it works
 

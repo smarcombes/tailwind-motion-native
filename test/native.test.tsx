@@ -232,3 +232,25 @@ test("elements without motion classes are left alone", () => {
   expect(style.opacity).toBeUndefined();
   expect(style.transform).toBeUndefined();
 });
+
+test("timeScale stretches durations and delays", () => {
+  jest.useFakeTimers();
+  configureMotion({ timeScale: 4 });
+
+  try {
+    const tree = render(
+      <Motion.View testID="box" className="motion-preset-fade" />
+    );
+    const box = tree.getByTestId("box");
+
+    // 500ms fade, so at quarter speed it is barely started at 500ms.
+    advanceAnimationByTime(500);
+    expect(Number(getAnimatedStyle(box).opacity)).toBeLessThan(0.9);
+
+    advanceAnimationByTime(1800);
+    expect(Number(getAnimatedStyle(box).opacity)).toBeCloseTo(1, 2);
+  } finally {
+    configureMotion({ timeScale: 1 });
+    jest.useRealTimers();
+  }
+});

@@ -24,6 +24,12 @@ export type MotionConfig = {
   respectReducedMotion: boolean;
   /** Warn once per class when a `motion-*` class has no native equivalent. */
   warnOnUnsupported: boolean;
+  /**
+   * Multiplies every duration and delay. `4` runs everything at quarter speed,
+   * which is handy for inspecting a choreography — or for recording one on a
+   * slow emulator. Leave it at `1` in a shipping app.
+   */
+  timeScale: number;
 };
 
 const config: MotionConfig = {
@@ -31,6 +37,7 @@ const config: MotionConfig = {
   translatePercentage: "layout",
   respectReducedMotion: true,
   warnOnUnsupported: true,
+  timeScale: 1,
 };
 
 /** Overrides the library defaults. Call it once, before rendering. */
